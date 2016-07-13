@@ -1,2 +1,9 @@
-# WindowsMonitor
-Windows solo server monitor
+此项目主要目的是建立可以快速批量部署的windows图表监控项目
+所有使用到的工具均基于windows
+
+目前使用到的工具主要有：
+sqlite3
+python
+flask模块
+psutil模块
+sqlite3模块
