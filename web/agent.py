@@ -1,117 +1,116 @@
 #!C:\Python27\python.exe
 # coding=utf-8
 
-import inspect
 import time
-import urllib
-import urllib2
-import json
 import socket
 import psutil
 import sqlite3
+import threading
 
-cx = sqlite3.connect("falcon.db")
-cur = cx.cursor()
-
-
-class cpu_mon:
-
-    def __init__(self):
-        self.data = {}
-
-    def getTime(self):
-        return str(int(time.time()) + 8 * 3600)
-
-    def getHost(self):
-        return socket.gethostname()
-
-    def getCPUpercent(self):
-        percent = psutil.cpu_percent()
-        return int(percent)
-
-    def getCPUuser(self, noBufferCache=True):
-        user = psutil.cpu_times()[0]
-        return int(user)
-
-    def getCPUsystem(self, noBufferCache=True):
-        system = psutil.cpu_times()[1]
-        return int(system)
-
-    def getCPUidle(self, noBufferCache=True):
-        idle = psutil.cpu_times()[2]
-        return int(idle)
-
-    def runAllGet(self):
-        # 自动获取mon类里的所有getXXX方法，用XXX作为key，getXXX()的返回值作为value，构造字典
-        for fun in inspect.getmembers(self, predicate=inspect.ismethod):
-            if fun[0][:3] == 'get':
-                self.data[fun[0][3:]] = fun[1]()
-        return self.data
+# cx = sqlite3.connect("falcon.db")
+# cur = cx.cursor()
+host = socket.gethostname()
 
 
-class mem_mon:
+class cpuThread (threading.Thread):
 
     def __init__(self):
-        self.data = {}
+        threading.Thread.__init__(self)
 
-    def getTime(self):
-        return str(int(time.time()) + 8 * 3600)
-
-    def getHost(self):
-        return socket.gethostname()
-
-    # def getLoadAvg(self):
-    #     with open('/proc/loadavg') as load_open:
-    #         a = load_open.read().split()[:3]
-    #         return ','.join(a)
-
-    def getMemTotal(self):
-        total = psutil.virtual_memory()[0]
-        return int(total / 1024 / 1024)
-
-    def getMemUsage(self, noBufferCache=True):
-        used = psutil.virtual_memory()[3]
-        return int(used / 1024 / 1024)
-
-    def getMemFree(self, noBufferCache=True):
-        free = psutil.virtual_memory()[1]
-        return int(free / 1024 / 1024)
-
-    def runAllGet(self):
-        # 自动获取mon类里的所有getXXX方法，用XXX作为key，getXXX()的返回值作为value，构造字典
-        for fun in inspect.getmembers(self, predicate=inspect.ismethod):
-            if fun[0][:3] == 'get':
-                self.data[fun[0][3:]] = fun[1]()
-        return self.data
+    def run(self):
+        cpu_mon()
 
 
-if __name__ == "__main__":
+class memThread (threading.Thread):
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        mem_mon()
+
+
+class dcThread (threading.Thread):
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        diskc_mon()
+
+
+def cpu_mon():
+    cx = sqlite3.connect("falcon.db")
+    cur = cx.cursor()
     while True:
-        c = cpu_mon()
-        cpu_data = c.runAllGet()
+        cpu_data = {}
+        cpu_data['Host'] = host
+        cpu_data['Time'] = int(int(time.time()) + 8 * 3600)
+        cpu_data['CPUpercent'] = int(psutil.cpu_percent())
+        cpu_data['CPUuser'] = int(psutil.cpu_times()[0])
+        cpu_data['CPUsystem'] = int(psutil.cpu_times()[1])
+        cpu_data['CPUidle'] = int(psutil.cpu_times()[2])
         print cpu_data
         try:
-            cpu_sql = "INSERT INTO `cpu_stat` (`host`,`cpu_percent`,`cpu_user`,`cpu_system`, `cpu_idle`, `time`) VALUES('%s', '%d', '%d', '%d', '%d', '%d')" % (
+            sql = "INSERT INTO `cpu_stat` (`host`,`cpu_percent`,`cpu_user`,`cpu_system`, `cpu_idle`, `time`) VALUES('%s', '%d', '%d', '%d', '%d', '%d')" % (
                 cpu_data['Host'], cpu_data['CPUpercent'], cpu_data['CPUuser'], cpu_data['CPUsystem'], cpu_data['CPUidle'], int(cpu_data['Time']))
-            cur.execute(cpu_sql)
+            cur.execute(sql)
             cx.commit()
         except:
             pass
         print "CPU DB insert OK"
-        m = mem_mon()
-        mem_data = m.runAllGet()
+        time.sleep(10)
+
+
+def mem_mon():
+    cx = sqlite3.connect("falcon.db")
+    cur = cx.cursor()
+    while True:
+        mem_data = {}
+        mem_data['Host'] = host
+        mem_data['Time'] = int(int(time.time()) + 8 * 3600)
+        mem_data['MemTotal'] = int(psutil.virtual_memory()[0]) / 1024 / 1024
+        mem_data['MemUsage'] = int(psutil.virtual_memory()[3]) / 1024 / 1024
+        mem_data['MemFree'] = int(psutil.virtual_memory()[1]) / 1024 / 1024
         print mem_data
         try:
-            mem_sql = "INSERT INTO `mem_stat` (`host`,`mem_free`,`mem_usage`,`mem_total`,`time`) VALUES('%s', '%d', '%d', '%d', '%d')" % (
+            sql = "INSERT INTO `mem_stat` (`host`,`mem_free`,`mem_usage`,`mem_total`,`time`) VALUES('%s', '%d', '%d', '%d', '%d')" % (
                 mem_data['Host'], mem_data['MemFree'], mem_data['MemUsage'], mem_data['MemTotal'], int(mem_data['Time']))
-            cur.execute(mem_sql)
+            cur.execute(sql)
             cx.commit()
         except:
             pass
         print "RAM DB insert OK"
-        # req = urllib2.Request("http://localhost:8888", json.dumps(data), {'Content-Type': 'application/json'})
-        # f = urllib2.urlopen(req)
-        # response = f.read()
-        # print response
-        # f.close()
         time.sleep(10)
+
+
+def diskc_mon():
+    cx = sqlite3.connect("falcon.db")
+    cur = cx.cursor()
+    while True:
+        dc_data = {}
+        dc_data['Host'] = host
+        dc_data['Time'] = int(int(time.time()) + 8 * 3600)
+        dc_data['DCtotal'] = int(psutil.disk_usage("C:")[0]) / 1024 / 1024
+        dc_data['DCused'] = int(psutil.disk_usage("C:")[1]) / 1024 / 1024
+        dc_data['DCfree'] = int(psutil.disk_usage("C:")[2]) / 1024 / 1024
+        dc_data['DCpercent'] = int(psutil.disk_usage("C:")[3])
+        print dc_data
+        try:
+            sql = "INSERT INTO `diskc_stat` (`host`,`disk_total`,`disk_used`,`disk_free`, `disk_percent`,`time`) VALUES('%s', '%d', '%d', '%d', '%d', '%d')" % (
+                dc_data['Host'], dc_data['DCtotal'], dc_data['DCused'], dc_data['DCfree'], dc_data['DCpercent'], int(dc_data['Time']))
+            cur.execute(sql)
+            cx.commit()
+        except:
+            pass
+        print "DiskC DB insert OK"
+        time.sleep(10)
+
+
+if __name__ == "__main__":
+    cputhread = cpuThread()
+    memthread = memThread()
+    dcThread = dcThread()
+    cputhread.start()
+    memthread.start()
+    dcThread.start()

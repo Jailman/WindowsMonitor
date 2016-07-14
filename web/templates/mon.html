@@ -3,72 +3,23 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>Windows Monitor</title>
-
         <script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+        <script src="http://cdn.hcharts.cn/highcharts/modules/exporting.js"></script>
+        <script src="http://cdn.bootcss.com/highstock/2.0.4/highstock.js"></script>
+        <script type="text/javascript" src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+        <script src="{{ url_for('static', filename='js/hcthemes/hctheme_gray.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
         <style type="text/css">
-${demo.css}
+        ${demo.css}
         </style>
-        <script type="text/javascript">
-        $(function () {
-            $.getJSON('/cpu?callback=?', function (data) {
-
-                // Create the chart
-                $('#cpu').highcharts('StockChart', {
-
-                    rangeSelector: {
-                        inputEnabled: $('#cpu').width() > 480,
-                        selected: 1
-                    },
-
-                    title: {
-                        text: 'Windows CPU Monitor'
-                    },
-
-                    series: [{
-                        name: 'Windows CPU Monitor',
-                        data: data,
-                        type: 'spline',
-                        tooltip: {
-                            valueDecimals: 2
-                        }
-                    }]
-                });
-            });
-        });
-    $(function () {
-        $.getJSON('/mem?callback=?', function (data) {
-
-            // Create the chart
-            $('#mem').highcharts('StockChart', {
-
-                rangeSelector: {
-                    inputEnabled: $('#mem').width() > 480,
-                    selected: 1
-                },
-
-                title: {
-                    text: 'Windows RAM Monitor'
-                },
-
-                series: [{
-                    name: 'Windows RAM Monitor',
-                    data: data,
-                    type: 'spline',
-                    tooltip: {
-                        valueDecimals: 2
-                    }
-                }]
-            });
-        });
-    });
-        </script>
-    </head>
-    <body>
-<script src="http://cdn.bootcss.com/highstock/2.0.4/highstock.js"></script>
-<script src="http://cdn.hcharts.cn/highcharts/modules/exporting.js"></script>
+</head>
 
 
-<div id="cpu" style="height: 400px; width: 800px"></div>
-<div id="mem" style="height: 400px; width: 800px"></div>
-    </body>
+<body>
+  <div id="diskc" style="height: 400px; width: 400px"></div>
+  <div id="cpu" style="height: 400px; width: 800px"></div>
+  <div id="mem" style="height: 400px; width: 800px"></div>
+</body>
+
+
 </html>
