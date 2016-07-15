@@ -15,14 +15,15 @@ def index():
 
 # 获取C盘用量
 
-#
+
 # @app.route("/diskc", methods=["GET"])
 # def getdcdata():
 #     cx = sqlite3.connect("falcon.db")
 #     cur = cx.cursor()
 #     cur.execute("SELECT MAX(id),`disk_percent` FROM `diskc_stat`")
 #     used_percent = float(cur.fetchall()[0][1])
-#     ones = [["Used", used_percent], ["Free", 100.0 - used_percent]]
+#     free_percent = 100.0 - used_percent
+#     ones = [["Used", used_percent], ["Free", free_percent]]
 #     return "%s(%s);" % (request.args.get('callback'), json.dumps(ones))
 
 # 获取CPU数据

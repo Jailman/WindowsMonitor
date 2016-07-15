@@ -145,7 +145,8 @@ def diskio_mon():
         dio_data["Write_speed_count"] = int(
             write_end_count - write_start_count)
         dio_data["Read_speed_kb"] = int(read_end_byte - read_start_byte) / 1024
-        dio_data["Write_speed_kb"] = int(write_end_byte - write_start_byte) / 1024
+        dio_data["Write_speed_kb"] = int(
+            write_end_byte - write_start_byte) / 1024
         dio_data["Read_time"] = int(psutil.disk_io_counters()[4])
         dio_data["Write_time"] = int(psutil.disk_io_counters()[5])
         print dio_data
