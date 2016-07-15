@@ -100,6 +100,11 @@ function charts(){
               title: {
                   text: 'Disk C: Usage'
               },
+              credits: {
+                  enabled: true,
+                  text: 'wanmei.com',
+                  href: 'http://www.wanmei.com'
+              },
               tooltip: {
           	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
               },
@@ -141,9 +146,9 @@ function charts(){
 }
 
 
-
+charts()
 
 //每3秒刷新图表
-$(document).ready(function() {
-  window.setInterval(charts,15000);
-});
+// $(document).ready(function() {
+//   window.setInterval(charts,15000);
+// });

@@ -2,6 +2,7 @@
 # coding=utf-8
 
 
+import psutil
 import sqlite3
 import json
 from flask import Flask, request, render_template, g
@@ -30,12 +31,14 @@ def getmemdata():
     ones = [[i[0] * 1000, i[1]] for i in cur.fetchall()]
     return "%s(%s);" % (request.args.get('callback'), json.dumps(ones))
 
+
 @app.route("/diskc", methods=["GET"])
 def getdcdata():
     cx = sqlite3.connect("falcon.db")
     cur = cx.cursor()
     cur.execute("SELECT MAX(id),`disk_percent` FROM `diskc_stat`")
-    ones = [["Used", i[1]] for i in cur.fetchall()]
+    used_percent = float(cur.fetchall()[0][1])
+    ones = [["Used", used_percent], ["Free", 100.0 - used_percent]]
     return "%s(%s);" % (request.args.get('callback'), json.dumps(ones))
 
 
