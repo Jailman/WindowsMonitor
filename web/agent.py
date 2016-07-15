@@ -57,7 +57,6 @@ class nioThread (threading.Thread):
         nicio_mon()
 
 
-
 def cpu_mon():
     cx = sqlite3.connect("falcon.db")
     cur = cx.cursor()
@@ -143,9 +142,10 @@ def diskio_mon():
         read_end_byte = psutil.disk_io_counters()[2]
         write_end_byte = psutil.disk_io_counters()[3]
         dio_data["Read_speed_count"] = int(read_end_count - read_start_count)
-        dio_data["Write_speed_count"] = int(write_end_count - write_start_count)
-        dio_data["Read_speed_kb"] = int(read_end_byte - read_start_byte)/1024
-        dio_data["Write_speed_kb"] = int(write_end_byte - write_start_byte)/1024
+        dio_data["Write_speed_count"] = int(
+            write_end_count - write_start_count)
+        dio_data["Read_speed_kb"] = int(read_end_byte - read_start_byte) / 1024
+        dio_data["Write_speed_kb"] = int(write_end_byte - write_start_byte) / 1024
         dio_data["Read_time"] = int(psutil.disk_io_counters()[4])
         dio_data["Write_time"] = int(psutil.disk_io_counters()[5])
         print dio_data
@@ -176,8 +176,8 @@ def nicio_mon():
         recv_end_byte = psutil.net_io_counters()[1]
         sent_end_pkt = psutil.net_io_counters()[2]
         recv_end_pkt = psutil.net_io_counters()[3]
-        nio_data["Sent_speed_kb"] = int(sent_end_byte - sent_start_byte)/1024
-        nio_data["Recv_speed_kb"] = int(recv_end_byte - recv_start_byte)/1024
+        nio_data["Sent_speed_kb"] = int(sent_end_byte - sent_start_byte) / 1024
+        nio_data["Recv_speed_kb"] = int(recv_end_byte - recv_start_byte) / 1024
         nio_data["Sent_speed_pkt"] = int(sent_end_pkt - sent_start_pkt)
         nio_data["Recv_speed_pkt"] = int(recv_end_pkt - recv_start_pkt)
         print nio_data
