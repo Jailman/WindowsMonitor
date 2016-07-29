@@ -1,9 +1,11 @@
-此项目主要目的是建立可以快速批量部署的windows图表监控项目
-所有使用到的工具均基于windows
+此项目主要目的是建立可以快速批量部署的windows图表监控项目<br>
+所有使用到的工具均基于windows<br>
 
-目前使用到的工具主要有：
-sqlite3
-python
-flask模块
-psutil模块
-sqlite3模块
+目前使用到的工具主要有：<br>
+<ul>
+<li>sqlite3</li>
+<li>python</li>
+<li>flask模块</li>
+<li>psutil模块</li>
+<li>sqlite3模块</li>
+</ul>
